@@ -82,6 +82,22 @@ const seedData = async () => {
       'https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?q=80&w=600&auto=format&fit=crop',
       'car-ford.jpg'
     );
+    const mercedesImgPath = await downloadCarImage(
+      'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=600&auto=format&fit=crop',
+      'car-mercedes.jpg'
+    );
+    const vinfastImgPath = await downloadCarImage(
+      'https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=600&auto=format&fit=crop',
+      'car-vinfast.jpg'
+    );
+    const porscheImgPath = await downloadCarImage(
+      'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=600&auto=format&fit=crop',
+      'car-porsche.jpg'
+    );
+    const toyotaImgPath = await downloadCarImage(
+      'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=600&auto=format&fit=crop',
+      'car-toyota.jpg'
+    );
 
     console.log('Seeding initial car inventory...');
     const cars = await Car.insertMany([
@@ -113,6 +129,46 @@ const seedData = async () => {
         description: 'V8 muscle convertible styling, soft-top layout, premium leather interior, and heavy acceleration specs.',
         location: 'Ho Chi Minh City',
         images: [fordImgPath],
+        available: true,
+      },
+      {
+        name: 'C200 Avantgarde',
+        brand: 'Mercedes-Benz',
+        year: 2022,
+        pricePerDay: 150,
+        description: 'Luxury compact executive sedan featuring high-end ambient lighting, leather upholstery, and active safety systems.',
+        location: 'Hanoi',
+        images: [mercedesImgPath],
+        available: true,
+      },
+      {
+        name: 'VF 8 Plus',
+        brand: 'VinFast',
+        year: 2023,
+        pricePerDay: 80,
+        description: 'Modern smart electric SUV by VinFast. Spacious interior, interactive voice assistant, and level 2 ADAS driver assist.',
+        location: 'Hai Phong',
+        images: [vinfastImgPath],
+        available: true,
+      },
+      {
+        name: '911 Carrera S',
+        brand: 'Porsche',
+        year: 2021,
+        pricePerDay: 350,
+        description: 'The ultimate sports coupe with twin-turbo flat-six engine, refined active suspension, and precision sport steering.',
+        location: 'Ho Chi Minh City',
+        images: [porscheImgPath],
+        available: true,
+      },
+      {
+        name: 'Fortuner Legender',
+        brand: 'Toyota',
+        year: 2020,
+        pricePerDay: 65,
+        description: 'Highly rugged and reliable 7-seater diesel SUV. Dynamic suspension, all-wheel drive, perfect for family off-road journeys.',
+        location: 'Danang',
+        images: [toyotaImgPath],
         available: true,
       },
     ]);
