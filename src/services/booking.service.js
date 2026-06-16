@@ -101,3 +101,36 @@ export const cancelBooking = async (bookingId) => {
 
   return booking;
 };
+
+/**
+ * Automatically cancels pending bookings that have been created more than 24 hours ago,
+ * or whose rental start date has already passed.
+ */
+export const autoCancelExpiredBookings = async () => {
+  try {
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const now = new Date();
+    
+    // Find bookings that are 'pending' and either:
+    // 1. Created more than 24 hours ago
+    // 2. The rental date has already passed
+    const expiredBookings = await Booking.find({
+      status: 'pending',
+      $or: [
+        { createdAt: { $lt: oneDayAgo } },
+        { rentalDate: { $lt: now } }
+      ]
+    });
+
+    if (expiredBookings.length > 0) {
+      const ids = expiredBookings.map(b => b._id);
+      await Booking.updateMany(
+        { _id: { $in: ids } },
+        { $set: { status: 'cancelled' } }
+      );
+      console.log(`[Auto-Cancel] Automatically cancelled ${expiredBookings.length} expired pending bookings: ${ids.join(', ')}`);
+    }
+  } catch (error) {
+    console.error('[Auto-Cancel Error] Failed to run auto-cancel job:', error.message);
+  }
+};
