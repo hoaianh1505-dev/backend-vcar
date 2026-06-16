@@ -4,7 +4,7 @@
       <i class="fa-solid fa-car-rear logo-icon"></i>
       <span>V-CAR</span>
     </div>
-    <p class="logo-sub">ADMIN CONSOLE</p>
+    <p class="logo-sub">BẢNG ĐIỀU KHIỂN</p>
   </div>
 
   <nav class="sidebar-nav">
@@ -12,19 +12,19 @@
       <li class="nav-item <%= activeTab === 'overview' ? 'active' : '' %>">
         <a href="/dashboard?tab=overview">
           <i class="fa-solid fa-chart-pie"></i>
-          <span>Overview</span>
+          <span>Tổng Quan</span>
         </a>
       </li>
       <li class="nav-item <%= activeTab === 'cars' ? 'active' : '' %>">
         <a href="/dashboard?tab=cars">
           <i class="fa-solid fa-car"></i>
-          <span>Manage Cars</span>
+          <span>Quản Lý Xe</span>
         </a>
       </li>
       <li class="nav-item <%= activeTab === 'bookings' ? 'active' : '' %>">
         <a href="/dashboard?tab=bookings">
           <i class="fa-solid fa-calendar-check"></i>
-          <span>Bookings</span>
+          <span>Đơn Thuê Xe</span>
         </a>
       </li>
     </ul>
@@ -37,12 +37,12 @@
       </div>
       <div class="user-info">
         <h4><%= user.fullName %></h4>
-        <span><%= user.role.toUpperCase() %></span>
+        <span><%= user.role === 'admin' ? 'QUẢN TRỊ VIÊN' : 'THÀNH VIÊN' %></span>
       </div>
     </div>
     <a href="/logout" class="btn btn-logout" style="text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 8px;">
       <i class="fa-solid fa-right-from-bracket"></i>
-      <span>Sign Out</span>
+      <span>Đăng Xuất</span>
     </a>
   </div>
 </aside>
