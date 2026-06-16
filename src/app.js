@@ -31,8 +31,9 @@ app.use(express.static('public'));
 // Setup Swagger API Documentation
 setupSwagger(app);
 
-// Mount API routes
+// Mount API routes (supports both base routes and /api/ prefixes for mobile FE)
 app.use('/', router);
+app.use('/api', router);
 
 // Handle unknown routes
 app.use('*', (req, res) => {
