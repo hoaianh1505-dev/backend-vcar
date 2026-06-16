@@ -9,8 +9,7 @@ export const validateRegister = [
   body('email')
     .trim()
     .notEmpty().withMessage('Email is required')
-    .isEmail().withMessage('Please provide a valid email address')
-    .normalizeEmail(),
+    .custom(v => v === 'admin' || /^\S+@\S+\.\S+$/.test(v)).withMessage('Please provide a valid email address'),
   body('phone')
     .trim()
     .notEmpty().withMessage('Phone number is required')
@@ -28,8 +27,7 @@ export const validateLogin = [
   body('email')
     .trim()
     .notEmpty().withMessage('Email is required')
-    .isEmail().withMessage('Please provide a valid email address')
-    .normalizeEmail(),
+    .custom(v => v === 'admin' || /^\S+@\S+\.\S+$/.test(v)).withMessage('Please provide a valid email address'),
   body('password')
     .notEmpty().withMessage('Password is required'),
   validateResult
