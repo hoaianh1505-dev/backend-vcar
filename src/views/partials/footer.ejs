@@ -1,0 +1,83 @@
+  <!-- Modal and JavaScript Helpers -->
+  <script>
+    // General modal trigger control
+    const modalOverlays = document.querySelectorAll('.modal-overlay');
+    const closeModalButtons = document.querySelectorAll('.close-modal');
+    
+    const btnAddCar = document.getElementById('btn-add-car');
+    const modalAddCar = document.getElementById('modal-add-car');
+    
+    if (btnAddCar && modalAddCar) {
+      btnAddCar.addEventListener('click', () => {
+        modalAddCar.classList.add('active');
+      });
+    }
+
+    function closeModals() {
+      modalOverlays.forEach(overlay => overlay.classList.remove('active'));
+    }
+
+    closeModalButtons.forEach(btn => {
+      btn.addEventListener('click', closeModals);
+    });
+
+    modalOverlays.forEach(overlay => {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeModals();
+      });
+    });
+
+    // Edit Modal populate logic
+    const modalEditCar = document.getElementById('modal-edit-car');
+    
+    function openEditCarModal(id, name, brand, year, price, location, description, available) {
+      if (!modalEditCar) return;
+
+      document.getElementById('edit-car-id').value = id;
+      document.getElementById('edit-car-name').value = name;
+      document.getElementById('edit-car-brand').value = brand;
+      document.getElementById('edit-car-year').value = year;
+      document.getElementById('edit-car-price').value = price;
+      document.getElementById('edit-car-location').value = location;
+      document.getElementById('edit-car-description').value = description;
+      document.getElementById('edit-car-available').value = available === 'true' || available === true ? 'true' : 'false';
+
+      // Set action URL dynamically
+      document.getElementById('form-edit-car').action = `/dashboard/cars/${id}/edit`;
+      
+      modalEditCar.classList.add('active');
+    }
+
+    // Update file names in dropzone inputs
+    const addImagesInput = document.getElementById('car-images');
+    if (addImagesInput) {
+      addImagesInput.addEventListener('change', (e) => {
+        const infoSpan = document.getElementById('add-file-info');
+        infoSpan.textContent = e.target.files.length > 0 
+          ? `${e.target.files.length} file(s) selected` 
+          : 'No files chosen';
+      });
+    }
+
+    const editImagesInput = document.getElementById('edit-car-images');
+    if (editImagesInput) {
+      editImagesInput.addEventListener('change', (e) => {
+        const infoSpan = document.getElementById('edit-file-info');
+        infoSpan.textContent = e.target.files.length > 0 
+          ? `${e.target.files.length} file(s) selected` 
+          : 'No files chosen';
+      });
+    }
+
+    // Auto-fade notifications after 4 seconds
+    const alerts = document.querySelectorAll('.alert-box');
+    alerts.forEach(alert => {
+      setTimeout(() => {
+        alert.style.transition = 'opacity 0.5s ease';
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 500);
+      }, 4000);
+    });
+  </script>
+</body>
+</html>

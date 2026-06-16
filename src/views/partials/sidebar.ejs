@@ -1,0 +1,48 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <i class="fa-solid fa-car-rear logo-icon"></i>
+      <span>V-CAR</span>
+    </div>
+    <p class="logo-sub">ADMIN CONSOLE</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul>
+      <li class="nav-item <%= activeTab === 'overview' ? 'active' : '' %>">
+        <a href="/dashboard?tab=overview">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Overview</span>
+        </a>
+      </li>
+      <li class="nav-item <%= activeTab === 'cars' ? 'active' : '' %>">
+        <a href="/dashboard?tab=cars">
+          <i class="fa-solid fa-car"></i>
+          <span>Manage Cars</span>
+        </a>
+      </li>
+      <li class="nav-item <%= activeTab === 'bookings' ? 'active' : '' %>">
+        <a href="/dashboard?tab=bookings">
+          <i class="fa-solid fa-calendar-check"></i>
+          <span>Bookings</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-profile glass">
+      <div class="avatar">
+        <i class="fa-solid fa-user-shield"></i>
+      </div>
+      <div class="user-info">
+        <h4><%= user.fullName %></h4>
+        <span><%= user.role.toUpperCase() %></span>
+      </div>
+    </div>
+    <a href="/logout" class="btn btn-logout" style="text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 8px;">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      <span>Sign Out</span>
+    </a>
+  </div>
+</aside>

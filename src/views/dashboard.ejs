@@ -1,0 +1,394 @@
+<%- include('partials/header', { title: 'Console Dashboard - V-Car Admin' }) %>
+
+<div class="dashboard-wrapper">
+  <!-- SIDEBAR include -->
+  <%- include('partials/sidebar') %>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="main-content">
+    <!-- CONTENT HEADER -->
+    <header class="content-header">
+      <div class="header-title">
+        <% if (activeTab === 'overview') { %>
+          <h1>Console Overview</h1>
+          <p>Real-time statistics and activity logs.</p>
+        <% } else if (activeTab === 'cars') { %>
+          <h1>Fleet Inventory</h1>
+          <p>Add, modify, and delete fleet cars.</p>
+        <% } else if (activeTab === 'bookings') { %>
+          <h1>Rental Bookings</h1>
+          <p>Review, approve, and cancel booking requests.</p>
+        <% } %>
+      </div>
+      
+      <!-- Server-side alert messages container -->
+      <div class="header-actions">
+        <% if (typeof success !== 'undefined' && success) { %>
+          <div class="alert-box success" style="margin-bottom: 0;">
+            <i class="fa-solid fa-circle-check"></i>
+            <span><%= success %></span>
+          </div>
+        <% } %>
+        <% if (typeof error !== 'undefined' && error) { %>
+          <div class="alert-box error" style="margin-bottom: 0;">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span><%= error %></span>
+          </div>
+        <% } %>
+      </div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <div class="content-body">
+      
+      <% if (activeTab === 'overview') { %>
+        <!-- TAB 1: OVERVIEW -->
+        <div class="stats-grid">
+          <div class="stat-card glass">
+            <div class="stat-icon purple">
+              <i class="fa-solid fa-car"></i>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Total Cars</span>
+              <h2 class="stat-value"><%= totalCars %></h2>
+            </div>
+          </div>
+
+          <div class="stat-card glass">
+            <div class="stat-icon green">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Available Cars</span>
+              <h2 class="stat-value"><%= availableCars %></h2>
+            </div>
+          </div>
+
+          <div class="stat-card glass">
+            <div class="stat-icon blue">
+              <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Total Bookings</span>
+              <h2 class="stat-value"><%= totalBookings %></h2>
+            </div>
+          </div>
+
+          <div class="stat-card glass">
+            <div class="stat-icon yellow">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Pending Requests</span>
+              <h2 class="stat-value"><%= pendingBookings %></h2>
+            </div>
+          </div>
+        </div>
+
+        <div class="welcome-widget glass">
+          <div class="widget-content">
+            <h2>Good Day, <%= user.fullName %>!</h2>
+            <p>Welcome to your V-Car rental dashboard. You have full authority to approve bookings, manage car fleets, and configure listing details. Live connection with MongoDB Atlas and AWS S3 services is established.</p>
+            <div class="widget-buttons">
+              <a href="/dashboard?tab=cars" class="btn btn-primary" style="text-decoration: none;">
+                <i class="fa-solid fa-plus"></i> Fleets Console
+              </a>
+              <a href="/dashboard?tab=bookings" class="btn btn-secondary" style="text-decoration: none;">
+                <i class="fa-solid fa-clipboard-list"></i> Pending Bookings
+              </a>
+            </div>
+          </div>
+          <div class="widget-visual">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+        </div>
+
+      <% } else if (activeTab === 'cars') { %>
+        <!-- TAB 2: CARS -->
+        <div class="section-actions">
+          <div class="search-bar glass">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="search-cars-input" placeholder="Search cars by name or brand..." oninput="filterCarsClientSide(this.value)">
+          </div>
+          <button class="btn btn-primary" id="btn-add-car">
+            <i class="fa-solid fa-plus"></i>
+            <span>Add Fleet Car</span>
+          </button>
+        </div>
+
+        <div class="cars-grid" id="cars-grid-container">
+          <% if (cars.length === 0) { %>
+            <div class="empty-state">
+              <i class="fa-solid fa-car-tunnel"></i>
+              <p>No fleet cars found. Click "Add Fleet Car" to get started.</p>
+            </div>
+          <% } else { %>
+            <% cars.forEach(car => { %>
+              <% 
+                const imageSrc = car.images && car.images.length > 0 
+                  ? car.images[0] 
+                  : 'https://images.unsplash.com/photo-1542282088-fe8426682b8f?q=80&w=600&auto=format&fit=crop';
+                
+                const statusText = car.available ? 'Available' : 'Rented';
+                const statusClass = car.available ? 'available' : 'rented';
+              %>
+              <div class="car-card glass car-list-item" data-name="<%= car.name.toLowerCase() %>" data-brand="<%= car.brand.toLowerCase() %>">
+                <div class="car-card-img">
+                  <img src="<%= imageSrc %>" alt="<%= car.name %>">
+                  <span class="badge-status <%= statusClass %>"><%= statusText %></span>
+                </div>
+                <div class="car-card-content">
+                  <div class="car-card-header">
+                    <div class="car-card-title">
+                      <h3><%= car.name %></h3>
+                      <span><%= car.brand %></span>
+                    </div>
+                    <div class="car-card-price">
+                      <span class="price-value">$<%= car.pricePerDay %></span>
+                      <span class="price-unit">per day</span>
+                    </div>
+                  </div>
+                  <p class="car-card-desc"><%= car.description %></p>
+                  <div class="car-card-meta">
+                    <span><i class="fa-solid fa-calendar"></i> Year: <%= car.year %></span>
+                    <span><i class="fa-solid fa-location-dot"></i> <%= car.location %></span>
+                  </div>
+                  <div class="car-card-actions">
+                    <button class="btn btn-secondary" onclick="openEditCarModal('<%= car._id %>', '<%= car.name %>', '<%= car.brand %>', '<%= car.year %>', '<%= car.pricePerDay %>', '<%= car.location %>', '<%= car.description %>', '<%= car.available %>')">
+                      <i class="fa-solid fa-pen-to-square"></i> Edit
+                    </button>
+                    <a href="/dashboard/cars/<%= car._id %>/delete" class="btn btn-danger" style="text-decoration: none;" onclick="return confirm('Are you sure you want to delete this car listing?')">
+                      <i class="fa-solid fa-trash-can"></i> Delete
+                    </a>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+
+        <script>
+          // Local client side filtering for cars list
+          function filterCarsClientSide(query) {
+            const val = query.toLowerCase();
+            const cards = document.querySelectorAll('.car-list-item');
+            cards.forEach(card => {
+              const name = card.getAttribute('data-name');
+              const brand = card.getAttribute('data-brand');
+              if (name.includes(val) || brand.includes(val)) {
+                card.style.display = 'flex';
+              } else {
+                card.style.display = 'none';
+              }
+            });
+          }
+        </script>
+
+      <% } else if (activeTab === 'bookings') { %>
+        <!-- TAB 3: BOOKINGS -->
+        <div class="section-actions">
+          <div class="filter-group">
+            <a href="/dashboard?tab=bookings&status=all" class="filter-btn <%= currentFilter === 'all' ? 'active' : '' %>" style="text-decoration: none;">All</a>
+            <a href="/dashboard?tab=bookings&status=pending" class="filter-btn <%= currentFilter === 'pending' ? 'active' : '' %>" style="text-decoration: none;">Pending</a>
+            <a href="/dashboard?tab=bookings&status=approved" class="filter-btn <%= currentFilter === 'approved' ? 'active' : '' %>" style="text-decoration: none;">Approved</a>
+            <a href="/dashboard?tab=bookings&status=cancelled" class="filter-btn <%= currentFilter === 'cancelled' ? 'active' : '' %>" style="text-decoration: none;">Cancelled</a>
+          </div>
+        </div>
+
+        <div class="table-container glass">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Car Detail</th>
+                <th>Rental Date</th>
+                <th>Status</th>
+                <th class="actions-col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (bookings.length === 0) { %>
+                <tr>
+                  <td colspan="5" class="table-loading">
+                    <i class="fa-solid fa-folder-open"></i> No booking requests found under this status.
+                  </td>
+                </tr>
+              <% } else { %>
+                <% bookings.forEach(booking => { %>
+                  <% 
+                    const bUser = booking.userId || { fullName: 'Unknown', email: 'N/A', phone: 'N/A' };
+                    const bCar = booking.carId || { name: 'Deleted Car', brand: 'N/A', pricePerDay: 0 };
+                    const rentalDateFormatted = new Date(booking.rentalDate).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    });
+                  %>
+                  <tr>
+                    <td>
+                      <div class="customer-cell">
+                        <span class="cell-primary"><%= bUser.fullName %></span>
+                        <span class="cell-secondary"><i class="fa-regular fa-envelope"></i> <%= bUser.email %></span>
+                        <span class="cell-secondary"><i class="fa-solid fa-phone"></i> <%= bUser.phone %></span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="car-cell">
+                        <span class="cell-primary"><%= bCar.name %></span>
+                        <span class="cell-secondary"><%= bCar.brand %> • $<%= bCar.pricePerDay %>/day</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="cell-primary"><%= rentalDateFormatted %></span>
+                    </td>
+                    <td>
+                      <span class="status-badge <%= booking.status %>"><%= booking.status.toUpperCase() %></span>
+                    </td>
+                    <td class="actions-col">
+                      <% if (booking.status === 'pending') { %>
+                        <div class="table-actions">
+                          <a href="/dashboard/bookings/<%= booking._id %>/approve" class="btn btn-primary" style="text-decoration: none;">
+                            <i class="fa-solid fa-check"></i> Approve
+                          </a>
+                          <a href="/dashboard/bookings/<%= booking._id %>/cancel" class="btn btn-danger" style="text-decoration: none;" onclick="return confirm('Are you sure you want to reject this request?')">
+                            <i class="fa-solid fa-xmark"></i> Reject
+                          </a>
+                        </div>
+                      <% } else { %>
+                        <span style="font-size: 0.8rem; color: var(--text-muted)">Processed</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL: ADD CAR (SSR Form Action) -->
+<div id="modal-add-car" class="modal-overlay">
+  <div class="modal-card glass">
+    <div class="modal-header">
+      <h2>Add Car Listing</h2>
+      <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="form-add-car" action="/dashboard/cars" method="POST" enctype="multipart/form-data">
+      <div class="form-row">
+        <div class="form-group col-6">
+          <label for="car-name">Car Model Name</label>
+          <input type="text" id="car-name" name="name" placeholder="Civic" required>
+        </div>
+        <div class="form-group col-6">
+          <label for="car-brand">Brand / Manufacturer</label>
+          <input type="text" id="car-brand" name="brand" placeholder="Honda" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-6">
+          <label for="car-year">Model Year</label>
+          <input type="number" id="car-year" name="year" min="1900" max="2030" placeholder="2023" required>
+        </div>
+        <div class="form-group col-6">
+          <label for="car-price">Price Per Day ($)</label>
+          <input type="number" id="car-price" name="pricePerDay" min="0" step="0.1" placeholder="50" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-12">
+          <label for="car-location">Location Address</label>
+          <input type="text" id="car-location" name="location" placeholder="Hanoi, Vietnam" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="car-description">Description Details</label>
+        <textarea id="car-description" name="description" rows="3" placeholder="Describe engine power, features, capacity, etc..." required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="car-images"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Fleet Images (Max 5)</label>
+        <div class="file-dropzone">
+          <input type="file" id="car-images" name="images" multiple accept="image/*">
+          <i class="fa-solid fa-images dropzone-icon"></i>
+          <p>Drag and drop images, or click to browse</p>
+          <span class="file-info" id="add-file-info">No files chosen</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Listing</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: EDIT CAR (SSR Form Action dynamically configured) -->
+<div id="modal-edit-car" class="modal-overlay">
+  <div class="modal-card glass">
+    <div class="modal-header">
+      <h2>Edit Car Listing</h2>
+      <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="form-edit-car" action="" method="POST" enctype="multipart/form-data">
+      <input type="hidden" id="edit-car-id" name="id">
+      <div class="form-row">
+        <div class="form-group col-6">
+          <label for="edit-car-name">Car Model Name</label>
+          <input type="text" id="edit-car-name" name="name" required>
+        </div>
+        <div class="form-group col-6">
+          <label for="edit-car-brand">Brand / Manufacturer</label>
+          <input type="text" id="edit-car-brand" name="brand" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-6">
+          <label for="edit-car-year">Model Year</label>
+          <input type="number" id="edit-car-year" name="year" min="1900" max="2030" required>
+        </div>
+        <div class="form-group col-6">
+          <label for="edit-car-price">Price Per Day ($)</label>
+          <input type="number" id="edit-car-price" name="pricePerDay" min="0" step="0.1" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-12">
+          <label for="edit-car-location">Location Address</label>
+          <input type="text" id="edit-car-location" name="location" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="edit-car-description">Description Details</label>
+        <textarea id="edit-car-description" name="description" rows="3" required></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-6">
+          <label for="edit-car-available">Availability Status</label>
+          <select id="edit-car-available" name="available">
+            <option value="true">Available</option>
+            <option value="false">Rented / Unavailable</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="edit-car-images"><i class="fa-solid fa-cloud-arrow-up"></i> Upload New Images (Optional, overwrites previous)</label>
+        <div class="file-dropzone">
+          <input type="file" id="edit-car-images" name="images" multiple accept="image/*">
+          <i class="fa-solid fa-images dropzone-icon"></i>
+          <p>Click to browse new fleet images</p>
+          <span class="file-info" id="edit-file-info">No files chosen</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Update Listing</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

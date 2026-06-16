@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V-Car Admin Dashboard</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Vanilla CSS Link -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dark-mode">
+  
+  <!-- Toast System -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Main Container -->
+  <div id="app">
+    
+    <!-- LOGIN SCREEN -->
+    <div id="login-container" class="login-wrapper">
+      <div class="login-glow"></div>
+      <div class="login-card glass">
+        <div class="login-header">
+          <div class="logo">
+            <i class="fa-solid fa-car-rear logo-icon"></i>
+            <span>V-CAR</span>
+          </div>
+          <h1>Welcome Back</h1>
+          <p>Please enter your admin credentials to access the console</p>
+        </div>
+        
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-email"><i class="fa-regular fa-envelope"></i> Email Address</label>
+            <input type="email" id="login-email" placeholder="admin@gmail.com" required autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label for="login-password"><i class="fa-solid fa-lock"></i> Password</label>
+            <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            <span>Log In</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </form>
+        
+        <div class="login-footer">
+          <p>Secure login with industry-standard JWT protocol.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD PANEL -->
+    <div id="dashboard-container" class="dashboard-wrapper hidden">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo">
+            <i class="fa-solid fa-car-rear logo-icon"></i>
+            <span>V-CAR</span>
+          </div>
+          <p class="logo-sub">ADMIN CONSOLE</p>
+        </div>
+
+        <nav class="sidebar-nav">
+          <ul>
+            <li class="nav-item active" data-tab="overview">
+              <a href="#overview">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Overview</span>
+              </a>
+            </li>
+            <li class="nav-item" data-tab="cars">
+              <a href="#cars">
+                <i class="fa-solid fa-car"></i>
+                <span>Manage Cars</span>
+              </a>
+            </li>
+            <li class="nav-item" data-tab="bookings">
+              <a href="#bookings">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span>Bookings</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="user-profile glass">
+            <div class="avatar">
+              <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div class="user-info">
+              <h4 id="user-fullname">Admin User</h4>
+              <span id="user-role">Administrator</span>
+            </div>
+          </div>
+          <button id="btn-logout" class="btn btn-logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Sign Out</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT AREA -->
+      <main class="main-content">
+        <!-- HEADER -->
+        <header class="content-header">
+          <div class="header-title">
+            <h1 id="page-title">Console Overview</h1>
+            <p id="page-subtitle">Real-time statistics and activity logs.</p>
+          </div>
+          <div class="header-actions">
+            <div class="date-badge glass">
+              <i class="fa-regular fa-calendar-days"></i>
+              <span id="current-date">June 16, 2026</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- CONTENT TABS -->
+        <div class="content-body">
+          
+          <!-- TAB 1: OVERVIEW -->
+          <section id="tab-overview" class="tab-pane active">
+            <div class="stats-grid">
+              <div class="stat-card glass">
+                <div class="stat-icon purple">
+                  <i class="fa-solid fa-car"></i>
+                </div>
+                <div class="stat-content">
+                  <span class="stat-label">Total Cars</span>
+                  <h2 class="stat-value" id="stat-total-cars">0</h2>
+                </div>
+              </div>
+
+              <div class="stat-card glass">
+                <div class="stat-icon green">
+                  <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="stat-content">
+                  <span class="stat-label">Available Cars</span>
+                  <h2 class="stat-value" id="stat-available-cars">0</h2>
+                </div>
+              </div>
+
+              <div class="stat-card glass">
+                <div class="stat-icon blue">
+                  <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <div class="stat-content">
+                  <span class="stat-label">Total Bookings</span>
+                  <h2 class="stat-value" id="stat-total-bookings">0</h2>
+                </div>
+              </div>
+
+              <div class="stat-card glass">
+                <div class="stat-icon yellow">
+                  <i class="fa-solid fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                  <span class="stat-label">Pending Requests</span>
+                  <h2 class="stat-value" id="stat-pending-bookings">0</h2>
+                </div>
+              </div>
+            </div>
+
+            <!-- Welcome Widget -->
+            <div class="welcome-widget glass">
+              <div class="widget-content">
+                <h2>Good Day, Administrator!</h2>
+                <p>Welcome to your V-Car rental dashboard. You have full authority to approve bookings, manage car fleets, and configure listing details. Live connection with MongoDB Atlas and AWS S3 services is established.</p>
+                <div class="widget-buttons">
+                  <button class="btn btn-primary" onclick="switchTab('cars')">
+                    <i class="fa-solid fa-plus"></i> Fleets Console
+                  </button>
+                  <button class="btn btn-secondary" onclick="switchTab('bookings')">
+                    <i class="fa-solid fa-clipboard-list"></i> Pending Bookings
+                  </button>
+                </div>
+              </div>
+              <div class="widget-visual">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+            </div>
+          </section>
+
+          <!-- TAB 2: MANAGE CARS -->
+          <section id="tab-cars" class="tab-pane">
+            <div class="section-actions">
+              <div class="search-bar glass">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-cars" placeholder="Search cars by name or brand...">
+              </div>
+              <button class="btn btn-primary" id="btn-add-car">
+                <i class="fa-solid fa-plus"></i>
+                <span>Add Fleet Car</span>
+              </button>
+            </div>
+
+            <!-- Cars Grid -->
+            <div class="cars-grid" id="cars-grid-container">
+              <!-- Dynamically populated -->
+              <div class="loading-state">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <p>Retrieving car listings...</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- TAB 3: BOOKINGS -->
+          <section id="tab-bookings" class="tab-pane">
+            <div class="section-actions">
+              <div class="filter-group">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="pending">Pending</button>
+                <button class="filter-btn" data-filter="approved">Approved</button>
+                <button class="filter-btn" data-filter="cancelled">Cancelled</button>
+              </div>
+            </div>
+
+            <!-- Bookings List -->
+            <div class="table-container glass">
+              <table class="data-table" id="bookings-table">
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Car Detail</th>
+                    <th>Rental Date</th>
+                    <th>Status</th>
+                    <th class="actions-col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="bookings-table-body">
+                  <!-- Dynamically populated -->
+                  <tr>
+                    <td colspan="5" class="table-loading">
+                      <i class="fa-solid fa-spinner fa-spin"></i> Loading bookings requests...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+        </div>
+      </main>
+    </div>
+
+    <!-- MODAL: ADD CAR -->
+    <div id="modal-add-car" class="modal-overlay">
+      <div class="modal-card glass">
+        <div class="modal-header">
+          <h2>Add Car Listing</h2>
+          <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="form-add-car" enctype="multipart/form-data">
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="car-name">Car Model Name</label>
+              <input type="text" id="car-name" name="name" placeholder="Civic" required>
+            </div>
+            <div class="form-group col-6">
+              <label for="car-brand">Brand / Manufacturer</label>
+              <input type="text" id="car-brand" name="brand" placeholder="Honda" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="car-year">Model Year</label>
+              <input type="number" id="car-year" name="year" min="1900" max="2030" placeholder="2023" required>
+            </div>
+            <div class="form-group col-6">
+              <label for="car-price">Price Per Day ($)</label>
+              <input type="number" id="car-price" name="pricePerDay" min="0" step="0.1" placeholder="50" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-12">
+              <label for="car-location">Location Address</label>
+              <input type="text" id="car-location" name="location" placeholder="Hanoi, Vietnam" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="car-description">Description Details</label>
+            <textarea id="car-description" name="description" rows="3" placeholder="Describe engine power, features, capacity, etc..." required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="car-images"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Fleet Images (Max 5)</label>
+            <div class="file-dropzone">
+              <input type="file" id="car-images" name="images" multiple accept="image/*">
+              <i class="fa-solid fa-images dropzone-icon"></i>
+              <p>Drag and drop images, or click to browse</p>
+              <span class="file-info" id="add-file-info">No files chosen</span>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Listing</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL: EDIT CAR -->
+    <div id="modal-edit-car" class="modal-overlay">
+      <div class="modal-card glass">
+        <div class="modal-header">
+          <h2>Edit Car Listing</h2>
+          <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="form-edit-car" enctype="multipart/form-data">
+          <input type="hidden" id="edit-car-id" name="id">
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="edit-car-name">Car Model Name</label>
+              <input type="text" id="edit-car-name" name="name" required>
+            </div>
+            <div class="form-group col-6">
+              <label for="edit-car-brand">Brand / Manufacturer</label>
+              <input type="text" id="edit-car-brand" name="brand" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="edit-car-year">Model Year</label>
+              <input type="number" id="edit-car-year" name="year" min="1900" max="2030" required>
+            </div>
+            <div class="form-group col-6">
+              <label for="edit-car-price">Price Per Day ($)</label>
+              <input type="number" id="edit-car-price" name="pricePerDay" min="0" step="0.1" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-12">
+              <label for="edit-car-location">Location Address</label>
+              <input type="text" id="edit-car-location" name="location" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="edit-car-description">Description Details</label>
+            <textarea id="edit-car-description" name="description" rows="3" required></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="edit-car-available">Availability Status</label>
+              <select id="edit-car-available" name="available">
+                <option value="true">Available</option>
+                <option value="false">Rented / Unavailable</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="edit-car-images"><i class="fa-solid fa-cloud-arrow-up"></i> Upload New Images (Optional, overwrites previous)</label>
+            <div class="file-dropzone">
+              <input type="file" id="edit-car-images" name="images" multiple accept="image/*">
+              <i class="fa-solid fa-images dropzone-icon"></i>
+              <p>Click to browse new fleet images</p>
+              <span class="file-info" id="edit-file-info">No files chosen</span>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Update Listing</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Main JavaScript File -->
+  <script src="js/app.js"></script>
+</body>
+</html>

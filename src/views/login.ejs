@@ -1,0 +1,52 @@
+<%- include('partials/header', { title: 'Login - V-Car Admin' }) %>
+
+<div class="login-wrapper">
+  <div class="login-glow"></div>
+  <div class="login-card glass">
+    <div class="login-header">
+      <div class="logo">
+        <i class="fa-solid fa-car-rear logo-icon"></i>
+        <span>V-CAR</span>
+      </div>
+      <h1>Welcome Back</h1>
+      <p>Please enter your admin credentials to access the console</p>
+    </div>
+    
+    <!-- Validation error alert -->
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert-box error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span><%= error %></span>
+      </div>
+    <% } %>
+
+    <!-- Success alert -->
+    <% if (typeof success !== 'undefined' && success) { %>
+      <div class="alert-box success">
+        <i class="fa-solid fa-circle-check"></i>
+        <span><%= success %></span>
+      </div>
+    <% } %>
+
+    <form action="/login" method="POST">
+      <div class="form-group">
+        <label for="login-email"><i class="fa-regular fa-envelope"></i> Email Address</label>
+        <input type="email" id="login-email" name="email" placeholder="admin@gmail.com" required autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="login-password"><i class="fa-solid fa-lock"></i> Password</label>
+        <input type="password" id="login-password" name="password" placeholder="••••••••" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">
+        <span>Log In</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </form>
+    
+    <div class="login-footer">
+      <p>Secure login with industry-standard JWT protocol.</p>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
