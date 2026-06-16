@@ -36,3 +36,4 @@ Thumbs.db
 # Uploaded assets
 public/uploads/*
 !public/uploads/.gitkeep
+!public/uploads/car-*.jpg
