@@ -254,16 +254,16 @@
                     <td class="actions-col">
                       <% if (booking.status === 'pending') { %>
                         <div class="table-actions">
-                          <a href="/dashboard/bookings/<%= booking._id %>/approve" class="btn btn-primary" style="text-decoration: none;">
+                          <a href="/dashboard/bookings/<%= booking._id %>/approve?status=<%= currentFilter %>" class="btn btn-primary" style="text-decoration: none;">
                             <i class="fa-solid fa-check"></i> Duyệt
                           </a>
-                          <a href="/dashboard/bookings/<%= booking._id %>/cancel" class="btn btn-danger" style="text-decoration: none;" onclick="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu đặt xe này không?')">
+                          <a href="/dashboard/bookings/<%= booking._id %>/cancel?status=<%= currentFilter %>" class="btn btn-danger" style="text-decoration: none;" onclick="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu đặt xe này không?')">
                             <i class="fa-solid fa-xmark"></i> Từ chối
                           </a>
                         </div>
                       <% } else if (booking.status === 'approved') { %>
                         <div class="table-actions">
-                          <a href="/dashboard/bookings/<%= booking._id %>/cancel" class="btn btn-danger" style="text-decoration: none;" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn đặt xe đã duyệt này không?')">
+                          <a href="/dashboard/bookings/<%= booking._id %>/cancel?status=<%= currentFilter %>" class="btn btn-danger" style="text-decoration: none;" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn đặt xe đã duyệt này không?')">
                             <i class="fa-solid fa-trash-can"></i> Hủy đơn
                           </a>
                         </div>
