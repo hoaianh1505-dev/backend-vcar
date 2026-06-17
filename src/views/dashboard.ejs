@@ -84,27 +84,8 @@
             </div>
           </div>
         </div>
-
-        <div class="welcome-widget glass">
-          <div class="widget-content">
-            <h2>Xin chào, <%= user.fullName %>!</h2>
-            <p>Chào mừng bạn đến với trang quản trị V-Car. Bạn có toàn quyền duyệt đơn thuê, quản lý danh sách xe và thiết lập thông số chi tiết của đội xe. Kết nối trực tiếp cơ sở dữ liệu MongoDB Atlas đã kích hoạt.</p>
-            <div class="widget-buttons">
-              <a href="/dashboard?tab=cars" class="btn btn-primary" style="text-decoration: none;">
-                <i class="fa-solid fa-plus"></i> Quản Lý Đội Xe
-              </a>
-              <a href="/dashboard?tab=bookings" class="btn btn-secondary" style="text-decoration: none;">
-                <i class="fa-solid fa-clipboard-list"></i> Yêu Cầu Đang Chờ
-              </a>
-            </div>
-          </div>
-          <div class="widget-visual">
-            <i class="fa-solid fa-shield-halved"></i>
-          </div>
-        </div>
-
         <!-- CHARTS SECTION -->
-        <div class="charts-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 24px; margin-bottom: 24px;">
+        <div class="charts-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 8px; margin-bottom: 24px;">
           
           <!-- Chart 1: Availability Status -->
           <div class="chart-card glass" style="padding: 24px; border-radius: 16px; background: #1B1C26; border: 1px solid #242533; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column;">
@@ -112,7 +93,7 @@
               <i class="fa-solid fa-chart-pie" style="color: #3B82F6;"></i>
               Tỷ lệ sẵn sàng của xe
             </h3>
-            <div style="position: relative; height: 260px; display: flex; align-items: center; justify-content: center;">
+            <div style="position: relative; height: 280px; display: flex; align-items: center; justify-content: center;">
               <canvas id="carStatusChart"></canvas>
             </div>
           </div>
@@ -123,7 +104,7 @@
               <i class="fa-solid fa-chart-pie" style="color: #10B981;"></i>
               Trạng thái yêu cầu đặt xe
             </h3>
-            <div style="position: relative; height: 260px; display: flex; align-items: center; justify-content: center;">
+            <div style="position: relative; height: 280px; display: flex; align-items: center; justify-content: center;">
               <canvas id="bookingStatusChart"></canvas>
             </div>
           </div>
@@ -136,7 +117,7 @@
             <i class="fa-solid fa-tags" style="color: #F59E0B;"></i>
             Thương hiệu xe trong đội ngũ
           </h3>
-          <div style="position: relative; height: 280px;">
+          <div style="position: relative; height: 300px;">
             <canvas id="carBrandsChart"></canvas>
           </div>
         </div>
@@ -174,15 +155,18 @@
               maintainAspectRatio: false,
               plugins: {
                 legend: {
+                  position: 'bottom',
                   labels: {
                     color: '#8A8C9E',
+                    boxWidth: 12,
+                    padding: 15,
                     font: { family: 'Inter, system-ui, sans-serif', size: 12 }
                   }
                 }
               }
             };
 
-            // 1. Car Status Doughnut Chart
+            // 1. Car Status Doughnut Chart (High cutout for premium look)
             new Chart(document.getElementById('carStatusChart').getContext('2d'), {
               type: 'doughnut',
               data: {
@@ -190,45 +174,57 @@
                 datasets: [{
                   data: [availableCars, rentedCars],
                   backgroundColor: ['#10B981', '#3B82F6'],
-                  borderWidth: 2,
-                  borderColor: '#1B1C26'
+                  borderWidth: 0,
+                  hoverOffset: 6
                 }]
               },
-              options: darkThemeOptions
+              options: {
+                ...darkThemeOptions,
+                cutout: '78%'
+              }
             });
 
-            // 2. Booking Status Pie Chart
+            // 2. Booking Status Doughnut Chart
             new Chart(document.getElementById('bookingStatusChart').getContext('2d'), {
-              type: 'pie',
+              type: 'doughnut',
               data: {
                 labels: ['Chờ duyệt', 'Đã duyệt', 'Đã hủy'],
                 datasets: [{
                   data: [pendingBookings, approvedBookings, cancelledBookings],
                   backgroundColor: ['#F59E0B', '#10B981', '#EF4444'],
-                  borderWidth: 2,
-                  borderColor: '#1B1C26'
+                  borderWidth: 0,
+                  hoverOffset: 6
                 }]
               },
-              options: darkThemeOptions
+              options: {
+                ...darkThemeOptions,
+                cutout: '78%'
+              }
             });
 
-            // 3. Car Brands Horizontal Bar Chart
-            new Chart(document.getElementById('carBrandsChart').getContext('2d'), {
+            // 3. Car Brands Horizontal Bar Chart with Gradient background
+            const ctx = document.getElementById('carBrandsChart').getContext('2d');
+            const brandGradient = ctx.createLinearGradient(0, 0, ctx.canvas.width, 0);
+            brandGradient.addColorStop(0, '#3B82F6');
+            brandGradient.addColorStop(1, '#8B5CF6');
+
+            new Chart(ctx, {
               type: 'bar',
               data: {
                 labels: brands,
                 datasets: [{
                   label: 'Số lượng xe',
                   data: brandValues,
-                  backgroundColor: '#3B82F6',
+                  backgroundColor: brandGradient,
                   borderRadius: 8,
-                  borderWidth: 0
+                  borderWidth: 0,
+                  barThickness: 16
                 }]
               },
               options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                indexAxis: 'y', // makes it horizontal bar
+                indexAxis: 'y',
                 plugins: {
                   legend: { display: false }
                 },
