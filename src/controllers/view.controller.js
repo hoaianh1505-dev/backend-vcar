@@ -158,7 +158,7 @@ export const handleDeleteCar = async (req, res) => {
 export const handleApproveBooking = async (req, res) => {
   try {
     await bookingService.approveBooking(req.params.id);
-    res.redirect('/dashboard?tab=bookings&status=pending&success=Booking approved successfully');
+    res.redirect('/dashboard?tab=bookings&status=approved&success=Đã duyệt đơn đặt xe thành công');
   } catch (error) {
     res.redirect(`/dashboard?tab=bookings&error=${encodeURIComponent(error.message)}`);
   }
@@ -170,7 +170,7 @@ export const handleApproveBooking = async (req, res) => {
 export const handleCancelBooking = async (req, res) => {
   try {
     await bookingService.cancelBooking(req.params.id);
-    res.redirect('/dashboard?tab=bookings&status=pending&success=Booking request rejected successfully');
+    res.redirect('/dashboard?tab=bookings&status=cancelled&success=Đã hủy đơn đặt xe thành công');
   } catch (error) {
     res.redirect(`/dashboard?tab=bookings&error=${encodeURIComponent(error.message)}`);
   }
