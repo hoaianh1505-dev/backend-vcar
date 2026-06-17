@@ -78,7 +78,10 @@ export const renderDashboard = async (req, res) => {
       currentFilter: 'all'
     };
 
-    if (activeTab === 'cars') {
+    if (activeTab === 'overview') {
+      payload.cars = cars;
+      payload.bookings = bookings;
+    } else if (activeTab === 'cars') {
       payload.cars = cars.sort((a, b) => b.createdAt - a.createdAt);
     } else if (activeTab === 'bookings') {
       const statusFilter = req.query.status || 'all';

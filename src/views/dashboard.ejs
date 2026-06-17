@@ -103,6 +103,150 @@
           </div>
         </div>
 
+        <!-- CHARTS SECTION -->
+        <div class="charts-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 24px; margin-bottom: 24px;">
+          
+          <!-- Chart 1: Availability Status -->
+          <div class="chart-card glass" style="padding: 24px; border-radius: 16px; background: #1B1C26; border: 1px solid #242533; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column;">
+            <h3 style="color: #FFFFFF; font-size: 1.1rem; margin-bottom: 20px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-chart-pie" style="color: #3B82F6;"></i>
+              Tỷ lệ sẵn sàng của xe
+            </h3>
+            <div style="position: relative; height: 260px; display: flex; align-items: center; justify-content: center;">
+              <canvas id="carStatusChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 2: Booking Status -->
+          <div class="chart-card glass" style="padding: 24px; border-radius: 16px; background: #1B1C26; border: 1px solid #242533; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column;">
+            <h3 style="color: #FFFFFF; font-size: 1.1rem; margin-bottom: 20px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-chart-pie" style="color: #10B981;"></i>
+              Trạng thái yêu cầu đặt xe
+            </h3>
+            <div style="position: relative; height: 260px; display: flex; align-items: center; justify-content: center;">
+              <canvas id="bookingStatusChart"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Chart 3: Top Brands (Wide Row) -->
+        <div class="chart-card glass" style="padding: 24px; border-radius: 16px; background: #1B1C26; border: 1px solid #242533; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin-bottom: 24px; display: flex; flex-direction: column;">
+          <h3 style="color: #FFFFFF; font-size: 1.1rem; margin-bottom: 20px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-tags" style="color: #F59E0B;"></i>
+            Thương hiệu xe trong đội ngũ
+          </h3>
+          <div style="position: relative; height: 280px;">
+            <canvas id="carBrandsChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart.js Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            const rawCars = <%- JSON.stringify(cars) %>;
+            const rawBookings = <%- JSON.stringify(bookings) %>;
+
+            // Process Car Status
+            const totalCars = rawCars.length;
+            const availableCars = rawCars.filter(c => c.available).length;
+            const rentedCars = totalCars - availableCars;
+
+            // Process Booking Status
+            const pendingBookings = rawBookings.filter(b => b.status === 'pending').length;
+            const approvedBookings = rawBookings.filter(b => b.status === 'approved').length;
+            const cancelledBookings = rawBookings.filter(b => b.status === 'cancelled').length;
+
+            // Process Car Brands
+            const brandCounts = {};
+            rawCars.forEach(c => {
+              if (c.brand) {
+                brandCounts[c.brand] = (brandCounts[c.brand] || 0) + 1;
+              }
+            });
+            const brands = Object.keys(brandCounts);
+            const brandValues = Object.values(brandCounts);
+
+            // Set up common Chart.js options for Dark Mode
+            const darkThemeOptions = {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  labels: {
+                    color: '#8A8C9E',
+                    font: { family: 'Inter, system-ui, sans-serif', size: 12 }
+                  }
+                }
+              }
+            };
+
+            // 1. Car Status Doughnut Chart
+            new Chart(document.getElementById('carStatusChart').getContext('2d'), {
+              type: 'doughnut',
+              data: {
+                labels: ['Sẵn sàng', 'Đang cho thuê'],
+                datasets: [{
+                  data: [availableCars, rentedCars],
+                  backgroundColor: ['#10B981', '#3B82F6'],
+                  borderWidth: 2,
+                  borderColor: '#1B1C26'
+                }]
+              },
+              options: darkThemeOptions
+            });
+
+            // 2. Booking Status Pie Chart
+            new Chart(document.getElementById('bookingStatusChart').getContext('2d'), {
+              type: 'pie',
+              data: {
+                labels: ['Chờ duyệt', 'Đã duyệt', 'Đã hủy'],
+                datasets: [{
+                  data: [pendingBookings, approvedBookings, cancelledBookings],
+                  backgroundColor: ['#F59E0B', '#10B981', '#EF4444'],
+                  borderWidth: 2,
+                  borderColor: '#1B1C26'
+                }]
+              },
+              options: darkThemeOptions
+            });
+
+            // 3. Car Brands Horizontal Bar Chart
+            new Chart(document.getElementById('carBrandsChart').getContext('2d'), {
+              type: 'bar',
+              data: {
+                labels: brands,
+                datasets: [{
+                  label: 'Số lượng xe',
+                  data: brandValues,
+                  backgroundColor: '#3B82F6',
+                  borderRadius: 8,
+                  borderWidth: 0
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y', // makes it horizontal bar
+                plugins: {
+                  legend: { display: false }
+                },
+                scales: {
+                  x: {
+                    grid: { color: '#242533' },
+                    ticks: { color: '#8A8C9E', stepSize: 1 }
+                  },
+                  y: {
+                    grid: { display: false },
+                    ticks: { color: '#8A8C9E' }
+                  }
+                }
+              }
+            });
+          });
+        </script>
+
       <% } else if (activeTab === 'cars') { %>
         <!-- TAB 2: CARS -->
         <div class="section-actions">
