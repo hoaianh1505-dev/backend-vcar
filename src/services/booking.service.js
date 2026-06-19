@@ -113,34 +113,38 @@ export const cancelBooking = async (bookingId) => {
 };
 
 /**
- * Automatically cancels pending bookings that have been created more than 24 hours ago,
- * or whose rental start date has already passed.
+ * Automatically cancels/deletes bookings that have been created or rented more than 24 hours ago,
+ * and restores their associated cars to available status so other users can rent them.
  */
 export const autoCancelExpiredBookings = async () => {
   try {
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const now = new Date();
     
-    // Find bookings that are 'pending' and either:
-    // 1. Created more than 24 hours ago
-    // 2. The rental date has already passed
+    // Find any bookings where the creation time or rental date is more than 24 hours in the past.
+    // This covers both pending and approved bookings that have completed their 1-day lease or confirmation window.
     const expiredBookings = await Booking.find({
-      status: 'pending',
       $or: [
         { createdAt: { $lt: oneDayAgo } },
-        { rentalDate: { $lt: now } }
+        { rentalDate: { $lt: oneDayAgo } }
       ]
     });
 
     if (expiredBookings.length > 0) {
-      const ids = expiredBookings.map(b => b._id);
-      await Booking.updateMany(
-        { _id: { $in: ids } },
-        { $set: { status: 'cancelled' } }
+      const bookingIds = expiredBookings.map(b => b._id);
+      const carIds = expiredBookings.map(b => b.carId);
+
+      // Remove the booking documents from database
+      await Booking.deleteMany({ _id: { $in: bookingIds } });
+
+      // Reset the associated cars to available
+      await Car.updateMany(
+        { _id: { $in: carIds } },
+        { $set: { available: true } }
       );
-      console.log(`[Auto-Cancel] Automatically cancelled ${expiredBookings.length} expired pending bookings: ${ids.join(', ')}`);
+
+      console.log(`[Auto-Cleanup] Successfully deleted ${expiredBookings.length} expired bookings (IDs: ${bookingIds.join(', ')}) and restored their cars (IDs: ${carIds.join(', ')}) to available status.`);
     }
   } catch (error) {
-    console.error('[Auto-Cancel Error] Failed to run auto-cancel job:', error.message);
+    console.error('[Auto-Cleanup Error] Failed to run database cleanup job:', error.message);
   }
 };
