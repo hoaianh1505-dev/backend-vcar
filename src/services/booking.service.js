@@ -19,6 +19,16 @@ export const createBooking = async (userId, carId, rentalDate) => {
     throw new AppError('Car is not available for rental', 400);
   }
 
+  // Enforce a limit of at most 1 active (pending or approved) booking per user
+  const activeBooking = await Booking.findOne({
+    userId,
+    status: { $in: ['pending', 'approved'] }
+  });
+
+  if (activeBooking) {
+    throw new AppError('Mỗi tài khoản chỉ được phép đặt xe 1 ngày (1 lượt thuê) tại một thời điểm. Vui lòng hoàn thành hoặc hủy lịch đặt xe hiện tại trước khi tạo lịch mới.', 400);
+  }
+
   const booking = await Booking.create({
     userId,
     carId,
