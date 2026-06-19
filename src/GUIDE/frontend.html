@@ -325,6 +325,15 @@ if (remainingMs &gt; 0) {
 } else {
     txtRemainingTime.text = "Đã hết hạn"
 }</code></pre>
+
+      <h3>5. ContactActivity (Màn hình liên hệ &amp; Bản đồ)</h3>
+      <p>
+        Hiển thị thông tin liên hệ Hotline hỗ trợ 24/7, email, chính sách sử dụng và tích hợp bản đồ chỉ đường:
+      </p>
+      <ul>
+        <li><strong>Bản đồ tương tác trực tiếp:</strong> Sử dụng đối tượng <code>WebView</code> để nhúng trực tiếp bản đồ Google Maps của địa chỉ showroom Vcar. WebView được cấu hình bật JavaScript để hiển thị bản đồ mượt mà và trực quan ngay bên trong ứng dụng.</li>
+        <li><strong>Nút chỉ đường thông minh:</strong> Tích hợp một nút "Chỉ đường" pill-shaped màu xanh Cyan nổi đè trên bản đồ. Khi nhấn vào nút này, hệ thống sẽ kích hoạt <code>ACTION_VIEW</code> Intent với package <code>com.google.android.apps.maps</code>, giúp mở trực tiếp ứng dụng Google Maps ngoài để định vị đường đi thực tế.</li>
+      </ul>
     </section>
 
   </main>
