@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vcar Developer Portal - Frontend Mobile Client</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --bg-primary: #08090c;
+      --bg-secondary: #0f1115;
+      --bg-surface: #171a21;
+      --bg-glass: rgba(23, 26, 33, 0.7);
+      --border-color: rgba(255, 255, 255, 0.05);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --color-primary: #009cbd;
+      --color-secondary: #2563eb;
+      --color-accent: #7c3aed;
+      --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    /* SIDEBAR */
+    .sidebar {
+      width: 280px;
+      background-color: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      padding: 30px 24px;
+      flex-shrink: 0;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+    .logo i {
+      color: var(--color-primary);
+    }
+    .logo-sub {
+      font-size: 0.7rem;
+      color: var(--color-secondary);
+      letter-spacing: 0.15em;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+    .sidebar-nav {
+      list-style: none;
+    }
+    .nav-item {
+      margin-bottom: 8px;
+    }
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-family: var(--font-heading);
+      font-weight: 500;
+      border-radius: 8px;
+      transition: var(--transition-smooth);
+    }
+    .nav-item a i {
+      font-size: 1.1rem;
+    }
+    .nav-item.active a, .nav-item a:hover {
+      color: #ffffff;
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+    .nav-item.active a {
+      color: var(--color-primary);
+      border-left: 3px solid var(--color-primary);
+      border-radius: 0 8px 8px 0;
+      padding-left: 13px;
+    }
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      padding-top: 20px;
+      text-align: center;
+    }
+
+    /* MAIN CONTENT */
+    .main-content {
+      margin-left: 280px;
+      flex-grow: 1;
+      padding: 40px 60px;
+      max-width: 1200px;
+    }
+    .header {
+      margin-bottom: 40px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 24px;
+    }
+    .header h1 {
+      font-family: var(--font-heading);
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .header p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+    }
+    .card {
+      background: var(--bg-glass);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      backdrop-filter: blur(12px);
+    }
+    .card h2 {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #ffffff;
+    }
+    .card h2 i {
+      color: var(--color-primary);
+    }
+    .card p {
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+    .card h3 {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      margin-top: 24px;
+      margin-bottom: 12px;
+      color: #ffffff;
+      border-left: 3px solid var(--color-primary);
+      padding-left: 10px;
+    }
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 16px;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+    li {
+      margin-bottom: 8px;
+    }
+    code {
+      font-family: monospace;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #38bdf8;
+      font-size: 0.9rem;
+    }
+    pre {
+      background: #0b0c10;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: #cbd5e1;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <i class="fa-solid fa-car-rear"></i>
+        <span>Vcar Portal</span>
+      </div>
+      <p class="logo-sub">Tài liệu dự án</p>
+    </div>
+    <ul class="sidebar-nav">
+      <li class="nav-item">
+        <a href="index.html">
+          <i class="fa-solid fa-house"></i>
+          <span>Tổng Quan</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="backend.html">
+          <i class="fa-solid fa-server"></i>
+          <span>Back-End Console</span>
+        </a>
+      </li>
+      <li class="nav-item active">
+        <a href="frontend.html">
+          <i class="fa-solid fa-mobile-screen-button"></i>
+          <span>Front-End Mobile</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="setup.html">
+          <i class="fa-solid fa-wrench"></i>
+          <span>Cài Đặt &amp; Chạy</span>
+        </a>
+      </li>
+    </ul>
+    <div class="sidebar-footer">
+      <p>&copy; 2026 Vcar Inc.</p>
+      <p>Documentation v2.1</p>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <header class="header">
+      <h1>Front-End Mobile Developer Guide</h1>
+      <p>Hướng dẫn kiến trúc mã nguồn Kotlin Android, cấu hình Retrofit, định dạng layout và luồng đăng ký thuê xe.</p>
+    </header>
+
+    <!-- SECTION 1: ARCHITECTURE & TECH -->
+    <section class="card">
+      <h2><i class="fa-solid fa-sitemap"></i> Kiến Trúc Dự Án Android</h2>
+      <p>
+        Dự án di động Android được viết bằng ngôn ngữ <strong>Kotlin</strong>, sử dụng mô hình MVC tối giản kết hợp với các thư viện kết nối mạng và tải ảnh hiện đại.
+      </p>
+      
+      <h3>Cấu Trúc Gói Lập Trình (Packages)</h3>
+      <pre><code>com.example.vcar.
+├── activities/       # Quản lý tất cả màn hình giao diện (Splash, Login, Home, v.v.)
+├── adapter/          # Bộ liên kết dữ liệu cho RecyclerView: CarAdapter, BookingAdapter
+├── model/            # Khai báo các đối tượng dữ liệu Kotlin (Data Classes)
+├── network/          # Cấu hình Retrofit API Client và đặc tả các yêu cầu (Requests)
+└── utils/            # Các tiện ích lưu trữ cục bộ SharedPrefManager để lưu JWT Token</code></pre>
+
+      <h3>Các Thư Viện Cốt Lõi (build.gradle)</h3>
+      <ul>
+        <li><strong>Retrofit 2 &amp; Converter Gson</strong>: Dùng để gọi API không đồng bộ và tự động parse JSON sang Model Class.</li>
+        <li><strong>Glide 4</strong>: Tải ảnh xe mượt mà từ máy chủ web và tự động lưu cache.</li>
+        <li><strong>Material Components</strong>: Dùng để vẽ các nút bấm bo góc, hộp thoại thông báo cao cấp.</li>
+        <li><strong>ConstraintLayout</strong>: Giúp thiết kế giao diện phẳng, tối ưu hóa hiệu năng render UI trên điện thoại.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 2: CORE SCREENS -->
+    <section class="card">
+      <h2><i class="fa-solid fa-window-restore"></i> Đặc Tả Các Màn Hình Chính</h2>
+      
+      <h3>1. SplashActivity (Màn hình mở đầu)</h3>
+      <p>
+        Hiển thị ảnh nền dọc 9:16 chất lượng cao chống biến dạng bằng cách sử dụng thẻ <code>ImageView</code> có thuộc tính <code>scaleType="centerCrop"</code>.
+        <br><strong>Logic điều hướng:</strong> Đọc Token đã lưu trong <code>SharedPrefManager</code>:
+      </p>
+      <ul>
+        <li>Nếu có Token: Giữ màn hình 1.5 giây và tự động chuyển thẳng vào màn hình chính <code>HomeActivity</code> (Auto-login).</li>
+        <li>Nếu không có Token: Hiển thị bộ nút hành động và liên kết Đăng Nhập kèm hiệu ứng chuyển động mờ (fade-in) 800ms.</li>
+      </ul>
+
+      <h3>2. HomeActivity (Trang chủ danh sách xe)</h3>
+      <p>
+        Danh sách xe được trình bày dạng thẻ kính mờ (Glassmorphism) với đường viền mảnh. Mỗi thẻ xe (<code>item_car.xml</code>) bao gồm:
+      </p>
+      <ul>
+        <li>Ảnh xe nằm nổi (inset margin 12dp) có bo góc 16dp.</li>
+        <li>Huy hiệu tình trạng xe (Còn xe / Hết xe) sử dụng hình nền mờ có màu sắc riêng biệt (Available / Rented) được gán linh động từ adapter.</li>
+        <li>Lưới thông số (Spec Grid): Đời xe, Số tự động, Nhiên liệu xăng.</li>
+        <li>Giá thuê nổi bật màu xanh Cyan ở chân thẻ.</li>
+      </ul>
+
+      <h3>3. BookingActivity (Màn hình đặt xe)</h3>
+      <p>
+        Màn hình chọn ngày đặt xe và hiển thị hộp thoại xác nhận điều khoản:
+      </p>
+      <ul>
+        <li><strong>Xử lý Điều Khoản Dịch Vụ:</strong> Khi nhấn nút "Đặt xe ngay", ứng dụng hiển thị hộp thoại <code>MaterialAlertDialog</code> yêu cầu chấp thuận các điều khoản thuê xe và hướng dẫn bắt buộc phải thực hiện thêm 1 bước gọi trực tiếp đến số Hotline <code>0363970865</code> để nhân viên xác nhận.</li>
+        <li><strong>Đọc mã lỗi Server:</strong> Khi gửi yêu cầu đặt xe, nếu server trả về mã lỗi (ví dụ do trùng đơn hàng), ứng dụng sẽ tự động trích xuất chuỗi JSON trong <code>errorBody()</code> để hiển thị Toast mô tả lỗi chính xác thay vì báo lỗi chung chung.</li>
+      </ul>
+
+      <h3>4. HistoryActivity (Lịch sử đặt xe)</h3>
+      <p>
+        RecyclerView hiển thị các đơn hàng của khách hàng cùng bộ đếm ngược thời gian (Countdown Timer) trong <code>BookingAdapter.kt</code>:
+      </p>
+      <pre><code>// Tính thời gian đếm ngược còn lại của đơn thuê xe (Tối đa 1 ngày)
+val baseDate = if (status == "approved") parse(rentalDate) else parse(createdAt)
+val expirationTimeMs = baseDate.time + (24 * 60 * 60 * 1000)
+val remainingMs = expirationTimeMs - System.currentTimeMillis()
+
+if (remainingMs &gt; 0) {
+    val hours = remainingMs / (60 * 60 * 1000)
+    val minutes = (remainingMs % (60 * 60 * 1000)) / (60 * 1000)
+    txtRemainingTime.text = "Còn lại: " + hours + "h " + minutes + "m"
+} else {
+    txtRemainingTime.text = "Đã hết hạn"
+}</code></pre>
+    </section>
+
+  </main>
+</body>
+</html>
