@@ -19,21 +19,25 @@ export const getRecommendation = async (query) => {
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (apiKey && apiKey.trim() !== '') {
-    try {
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
-      
-      const fleetInfo = allCars.map(c => ({
-        id: c._id.toString(),
-        name: c.name,
-        brand: c.brand,
-        year: c.year,
-        pricePerDay: c.pricePerDay,
-        description: c.description,
-        location: c.location
-      }));
+    const modelsToTry = [
+      'gemini-2.5-flash-lite',
+      'gemini-2.5-flash',
+      'gemini-3.5-flash',
+      'gemini-3.1-flash-lite',
+      'gemini-flash-latest'
+    ];
 
-      const systemPrompt = `Bạn là trợ lý AI chuyên nghiệp của dịch vụ thuê xe tự lái hạng sang VCar.
+    const fleetInfo = allCars.map(c => ({
+      id: c._id.toString(),
+      name: c.name,
+      brand: c.brand,
+      year: c.year,
+      pricePerDay: c.pricePerDay,
+      description: c.description,
+      location: c.location
+    }));
+
+    const systemPrompt = `Bạn là trợ lý AI chuyên nghiệp của dịch vụ thuê xe tự lái hạng sang VCar.
 Nhiệm vụ của bạn là tư vấn và gợi ý duy nhất 1 chiếc xe phù hợp nhất từ danh sách đội xe có sẵn của chúng tôi dựa trên yêu cầu của khách hàng.
 
 Dưới đây là danh sách xe đang sẵn sàng phục vụ dạng JSON:
@@ -47,43 +51,53 @@ YÊU CẦU TRẢ LỜI:
 RECOMMENDED_IDS: [ID]
 (Ví dụ: RECOMMENDED_IDS: [60d21b4667d0d8992e610c85])`;
 
-      const result = await model.generateContent({
-        contents: [{ role: 'user', parts: [{ text: `${systemPrompt}\n\nYêu cầu của khách hàng: "${query}"` }] }]
-      });
+    for (const modelName of modelsToTry) {
+      try {
+        console.log(`[AI Service] Attempting Gemini call with model: ${modelName}`);
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: modelName });
 
-      const responseText = result.response.text();
-      
-      // Check if AI refused to answer
-      if (responseText.includes("không thể trả lời câu hỏi ngoài phạm vi")) {
-        return {
-          recommendation: "Xin lỗi, tôi không thể trả lời câu hỏi ngoài phạm vi tư vấn thuê xe của VCar.",
-          recommendedCars: []
-        };
+        const result = await model.generateContent({
+          contents: [{ role: 'user', parts: [{ text: `${systemPrompt}\n\nYêu cầu của khách hàng: "${query}"` }] }]
+        });
+
+        const responseText = result.response.text();
+        
+        // Check if AI refused to answer
+        if (responseText.includes("không thể trả lời câu hỏi ngoài phạm vi")) {
+          return {
+            recommendation: "Xin lỗi, tôi không thể trả lời câu hỏi ngoài phạm vi tư vấn thuê xe của VCar.",
+            recommendedCars: []
+          };
+        }
+
+        // Parse recommended IDs
+        const match = responseText.match(/RECOMMENDED_IDS:\s*\[([^\]]+)\]/);
+        let recommendedCarIds = [];
+        let cleanText = responseText.replace(/RECOMMENDED_IDS:\s*\[([^\]]+)\]/, '').trim();
+
+        if (match && match[1]) {
+          recommendedCarIds = match[1].split(',')
+            .map(id => id.trim().replace(/['"]/g, ''))
+            .filter(id => id.length === 24)
+            .slice(0, 1); // Only allow 1 car
+        }
+
+        const recommendedCars = await Car.find({ _id: { $in: recommendedCarIds }, available: true });
+
+        if (recommendedCars.length > 0) {
+          console.log(`[AI Service] Gemini call succeeded using model: ${modelName}`);
+          return {
+            recommendation: cleanText,
+            recommendedCars: recommendedCars.slice(0, 1)
+          };
+        }
+      } catch (error) {
+        console.warn(`[AI Service] Model ${modelName} failed: ${error.message}`);
+        // Loop continues to next model
       }
-
-      // Parse recommended IDs
-      const match = responseText.match(/RECOMMENDED_IDS:\s*\[([^\]]+)\]/);
-      let recommendedCarIds = [];
-      let cleanText = responseText.replace(/RECOMMENDED_IDS:\s*\[([^\]]+)\]/, '').trim();
-
-      if (match && match[1]) {
-        recommendedCarIds = match[1].split(',')
-          .map(id => id.trim().replace(/['"]/g, ''))
-          .filter(id => id.length === 24)
-          .slice(0, 1); // Only allow 1 car
-      }
-
-      const recommendedCars = await Car.find({ _id: { $in: recommendedCarIds }, available: true });
-
-      if (recommendedCars.length > 0) {
-        return {
-          recommendation: cleanText,
-          recommendedCars: recommendedCars.slice(0, 1)
-        };
-      }
-    } catch (error) {
-      console.error('Gemini API Error, falling back to NLP Matcher:', error.message);
     }
+    console.error('[AI Service] All Gemini models in fallback chain failed. Falling back to NLP Matcher.');
   }
 
   // Fallback Rule-Based NLP Matcher
