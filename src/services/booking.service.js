@@ -9,7 +9,7 @@ import { AppError } from '../middlewares/error.middleware.js';
  * @param {Date} rentalDate 
  * @returns {Promise<Object>} Created booking document
  */
-export const createBooking = async (userId, carId, rentalDate) => {
+export const createBooking = async (userId, carId, rentalDate, fullName, phoneNumber, licenseNumber, address) => {
   const car = await Car.findById(carId);
   if (!car) {
     throw new AppError('Car not found', 404);
@@ -33,8 +33,16 @@ export const createBooking = async (userId, carId, rentalDate) => {
     userId,
     carId,
     rentalDate,
+    fullName,
+    phoneNumber,
+    licenseNumber,
+    address,
     status: 'pending',
   });
+
+  // Set the car to unavailable immediately
+  car.available = false;
+  await car.save();
 
   return booking;
 };
@@ -104,8 +112,8 @@ export const cancelBooking = async (bookingId) => {
   booking.status = 'cancelled';
   await booking.save();
 
-  // If approved before, return car back to available pool
-  if (previousStatus === 'approved') {
+  // Return car back to available pool if booking was active (pending or approved)
+  if (previousStatus === 'approved' || previousStatus === 'pending') {
     await Car.findByIdAndUpdate(booking.carId, { available: true });
   }
 

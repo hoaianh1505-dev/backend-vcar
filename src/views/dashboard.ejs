@@ -374,9 +374,15 @@
                   <tr>
                     <td>
                       <div class="customer-cell">
-                        <span class="cell-primary"><%= bUser.fullName %></span>
+                        <span class="cell-primary"><%= booking.fullName || bUser.fullName %></span>
                         <span class="cell-secondary"><i class="fa-regular fa-envelope"></i> <%= bUser.email %></span>
-                        <span class="cell-secondary"><i class="fa-solid fa-phone"></i> <%= bUser.phone %></span>
+                        <span class="cell-secondary"><i class="fa-solid fa-phone"></i> <%= booking.phoneNumber || bUser.phone %></span>
+                        <% if (booking.licenseNumber) { %>
+                          <span class="cell-secondary" style="font-size: 0.8rem; color: #3B82F6;"><i class="fa-solid fa-id-card"></i> GPLX: <%= booking.licenseNumber %></span>
+                        <% } %>
+                        <% if (booking.address) { %>
+                          <span class="cell-secondary" style="font-size: 0.8rem; color: #10B981;"><i class="fa-solid fa-location-dot"></i> <%= booking.address %></span>
+                        <% } %>
                       </div>
                     </td>
                     <td>

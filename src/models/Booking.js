@@ -16,6 +16,22 @@ const bookingSchema = new mongoose.Schema(
       type: Date,
       required: [true, 'Rental date is required'],
     },
+    fullName: {
+      type: String,
+      required: [true, 'Full name is required'],
+    },
+    phoneNumber: {
+      type: String,
+      required: [true, 'Phone number is required'],
+    },
+    licenseNumber: {
+      type: String,
+      required: [true, 'Driver\'s license number is required'],
+    },
+    address: {
+      type: String,
+      required: [true, 'Address is required'],
+    },
     status: {
       type: String,
       enum: ['pending', 'approved', 'cancelled'],

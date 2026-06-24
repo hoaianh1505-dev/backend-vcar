@@ -6,9 +6,18 @@ import * as bookingService from '../services/booking.service.js';
 export const createBooking = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { carId, rentalDate } = req.body;
+    console.log('Incoming Booking Request Body:', req.body);
+    const { carId, rentalDate, fullName, phoneNumber, licenseNumber, address } = req.body;
     
-    const booking = await bookingService.createBooking(userId, carId, rentalDate);
+    const booking = await bookingService.createBooking(
+      userId,
+      carId,
+      rentalDate,
+      fullName,
+      phoneNumber,
+      licenseNumber,
+      address
+    );
     
     res.status(201).json({
       success: true,
