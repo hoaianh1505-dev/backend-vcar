@@ -3,6 +3,7 @@ import authRoutes from './auth.routes.js';
 import carRoutes from './car.routes.js';
 import bookingRoutes from './booking.routes.js';
 import adminRoutes from './admin.routes.js';
+import aiRoutes from './ai.routes.js';
 import viewRoutes from './view.routes.js';
 
 const router = Router();
@@ -17,6 +18,7 @@ router.use('/auth', authRoutes);
 router.use('/cars', carRoutes);
 router.use('/bookings', bookingRoutes);
 router.use('/admin', adminRoutes);
+router.use('/ai', aiRoutes);
 
 // Bind EJS view routes
 router.use('/', viewRoutes);
