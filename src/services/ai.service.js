@@ -18,7 +18,7 @@ export const getRecommendation = async (query) => {
 
   const apiKey = process.env.GEMINI_API_KEY;
 
-  if (apiKey && apiKey.startsWith('AIzaSy')) {
+  if (apiKey && apiKey.trim() !== '') {
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
